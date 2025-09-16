@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотечный каталог</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .stats {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats h3 {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .status-free {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-busy {
+            color: red;
+            font-weight: bold;
+        }
+
+        .add-book-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row > div {
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            background: #28a745;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-edit:hover {
+            background: #218838;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Библиотечный каталог</h1>
+        
+        <div class="filters">
+            <h2>Фильтры</h2>
+            <div class="filter-group">
+                <label for="search">Поиск по названию/автору:</label>
+                <input type="text" id="search" placeholder="Введите название или автора...">
+            </div>
+            
+            <div class="form-row">
+                <div class="filter-group">
+                    <label for="author">Автор:</label>
+                    <input type="text" id="author" placeholder="Фильтр по автору">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="genre">Жанр:</label>
+                    <input type="text" id="genre" placeholder="Фильтр по жанру">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status">Статус:</label>
+                    <select id="status">
+                        <option value="">Все</option>
+                        <option value="free">Свободны</option>
+                        <option value="busy">Заняты</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="applyFilters()">Применить фильтры</button>
+            <button onclick="clearFilters()" style="background: #6c757d;">Сбросить фильтры</button>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats">
+            <h3>📊 Статистика библиотеки</h3>
+            <p>Всего книг: <span id="totalBooks">0</span></p>
+            <p>Всего экземпляров: <span id="totalCopies">0</span></p>
+            <p>Свободных книг: <span id="freeBooks">0</span></p>
+            <p>Занятых книг: <span id="busyBooks">0</span></p>
+        </div>
+
+        <h2>Список книг</h2>
+        <table id="booksTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Жанр</th>
+                    <th>Экземпляры</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="booksBody">
+
+            </tbody>
+        </table>
+
+        <div class="add-book-form">
+            <h2>➕ Добавить новую книгу</h2>
+            <div class="form-row">
+                <div>
+                    <label for="newName">Название:</label>
+                    <input type="text" id="newName" required>
+                </div>
+                <div>
+                    <label for="newAuthor">Автор:</label>
+                    <input type="text" id="newAuthor" required>
+                </div>
+                <div>
+                    <label for="newGenre">Жанр:</label>
+                    <input type="text" id="newGenre" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="newCopies">Количество экземпляров:</label>
+                    <input type="number" id="newCopies" min="1" required>
+                </div>
+                <div>
+                    <label for="newStatus">Статус:</label>
+                    <select id="newStatus" required>
+                        <option value="free">Свободна</option>
+                        <option value="busy">Занята</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="addBook()">Добавить книгу</button>
+        </div>
+    </div>
+
+    <script>
+        // Загрузка данных при запуске
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBooks();
+            loadStatistics();
+        });
+
+        // Загрузка всех книг
+        async function loadBooks() {
+            try {
+                const response = await fetch('/books');
+                const books = await response.json();
+                displayBooks(books);
+            } catch (error) {
+                console.error('Ошибка загрузки книг:', error);
+            }
+        }
+
+        // Загрузка статистики
+        async function loadStatistics() {
+            try {
+                // Общая статистика
+                const totalResponse = await fetch('/books/total');
+                const totalData = await totalResponse.json();
+                
+                document.getElementById('totalBooks').textContent = totalData.totalBooks;
+                document.getElementById('totalCopies').textContent = totalData.totalCopies;
+
+                // Статистика по статусам
+                const freeResponse = await fetch('/book/count?status=free');
+                const freeData = await freeResponse.json();
+                document.getElementById('freeBooks').textContent = freeData.count;
+
+                const busyResponse = await fetch('/book/count?status=busy');
+                const busyData = await busyResponse.json();
+                document.getElementById('busyBooks').textContent = busyData.count;
+
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+
+        function displayBooks(books) {
+            const tbody = document.getElementById('booksBody');
+            tbody.innerHTML = '';
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.name}</td>
+                    <td>${book.author}</td>
+                    <td>${book.genre}</td>
+                    <td>${book.copies}</td>
+                    <td class="status-${book.status}">${book.status === 'free' ? 'Свободна' : 'Занята'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-edit" onclick="editBook('${book.id}')">✏️</button>
+                        <button class="btn-delete" onclick="deleteBook('${book.id}')">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+    //фильры сюдааааааа
+        async function applyFilters() {
+            try {
+                const search = document.getElementById('search').value;
+                const author = document.getElementById('author').value;
+                const genre = document.getElementById('genre').value;
+                const status = document.getElementById('status').value;
+
+                const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (author) params.append('author', author);
+                if (genre) params.append('genre', genre);
+                if (status) params.append('status', status);
+
+                const response = await fetch(`/books/filter?${params}`);
+                const books = await response.json();
+                displayBooks(books);
+            } catch (error) {
+                console.error('Ошибка фильтрации:', error);
+            }
+        }
+
+        // долой фльтры
+        function clearFilters() {
+            document.getElementById('search').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('genre').value = '';
+            document.getElementById('status').value = '';
+            loadBooks();
+        }
+
+        // New книга
+        async function addBook() {
+            try {
+                const newBook = {
+                    name: document.getElementById('newName').value,
+                    author: document.getElementById('newAuthor').value,
+                    genre: document.getElementById('newGenre').value,
+                    copies: parseInt(document.getElementById('newCopies').value),
+                    status: document.getElementById('newStatus').value
+                };
+
+                const response = await fetch('/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newBook)
+                });
+
+                if (response.ok) {
+                    alert('Книга добавлена успешно!');
+                    // Очищаем форму
+                    document.getElementById('newName').value = '';
+                    document.getElementById('newAuthor').value = '';
+                    document.getElementById('newGenre').value = '';
+                    document.getElementById('newCopies').value = '';
+                    document.getElementById('newStatus').value = 'free';
+                    
+                    // Обновляем данные
+                    loadBooks();
+                    loadStatistics();
+                }
+            } catch (error) {
+                console.error('Ошибка добавления книги:', error);
+            }
+        }
+
+        async function deleteBook(id) {
+            if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+                try {
+                    const response = await fetch(`/book/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Книга удалена успешно!');
+                        loadBooks();
+                        loadStatistics();
+                    }
+                } catch (error) {
+                    console.error('Ошибка удаления книги:', error);
+                }
+            }
+        }
+
+        //редактор книжечки
+        async function editBook(id) {
+            const newStatus = prompt('Введите новый статус (free/busy):');
+            if (newStatus && (newStatus === 'free' || newStatus === 'busy')) {
+                try {
+                    const response = await fetch(`/book/${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    if (response.ok) {
+                        alert('Статус книги обновлен!');
+                        loadBooks();
+                        loadStatistics();
+                    }
+                } catch (error) {
+                    console.error('Ошибка обновления книги:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

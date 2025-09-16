@@ -1,0 +1,28 @@
+{
+  "books": [
+    {
+      "id": "ab55",
+      "name": "d",
+      "author": "dd",
+      "genre": "d",
+      "copies": 5,
+      "status": "free"
+    },
+    {
+      "id": "1b57",
+      "name": "f",
+      "author": "ef",
+      "genre": "f",
+      "copies": 10,
+      "status": "free"
+    },
+    {
+      "id": "4723",
+      "name": "ы",
+      "author": "а",
+      "genre": "у",
+      "copies": 20,
+      "status": "free"
+    }
+  ]
+}
